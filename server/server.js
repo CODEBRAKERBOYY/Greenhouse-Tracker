@@ -1,20 +1,25 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
 app.use(express.json());
 
-// Test route
 app.get('/', (req, res) => {
-  res.json({ message: '🚀 Greenhouse Tracker API is running!' });
+  console.log('Request received!');
+  res.json({ message: 'Server is working!' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+const PORT = 3001;
+
+const server = app.listen(PORT, () => {
+  console.log('Server started on port ' + PORT);
+});
+
+server.on('error', (error) => {
+  console.error('Server error:', error);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught exception:', error);
 });
