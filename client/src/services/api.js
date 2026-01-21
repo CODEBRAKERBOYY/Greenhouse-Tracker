@@ -14,6 +14,12 @@ export const createApplication = async (data) => {
   return response.data;
 };
 
+// Update application
+export const updateApplication = async (id, data) => {
+  const response = await axios.put(`${API_URL}/applications/${id}`, data);
+  return response.data;
+};
+
 // Delete application
 export const deleteApplication = async (id) => {
   const response = await axios.delete(`${API_URL}/applications/${id}`);
@@ -23,5 +29,6 @@ export const deleteApplication = async (id) => {
 export default {
   getApplications,
   createApplication,
+  updateApplication,
   deleteApplication,
 };

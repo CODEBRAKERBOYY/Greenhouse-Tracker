@@ -15,6 +15,9 @@ mongoose.connect('mongodb://localhost:27017/greenhouse-tracker')
 const applicationsRouter = require('./routes/applications');
 app.use('/api/applications', applicationsRouter);
 
+const aiRouter = require('./routes/ai');
+app.use('/api/ai', aiRouter);
+
 app.get('/', (req, res) => {
   res.json({ message: 'Server is working!' });
 });

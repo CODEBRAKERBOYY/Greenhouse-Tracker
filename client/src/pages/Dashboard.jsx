@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddApplicationForm from '../components/AddApplicationForm';
-import { getApplications, createApplication, deleteApplication } from '../services/api';
+import EditApplicationForm from '../components/EditApplicationForm';
+import { getApplications, createApplication, updateApplication, deleteApplication } from '../services/api';
 
 function Dashboard() {
   const navigate = useNavigate();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingApp, setEditingApp] = useState(null);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,6 +39,23 @@ function Dashboard() {
     } catch (error) {
       console.error('Error adding application:', error);
       alert('Failed to add application');
+    }
+  };
+
+  const handleEditClick = (app) => {
+    setEditingApp(app);
+    setShowEditForm(true);
+  };
+
+  const handleUpdateApplication = async (id, formData) => {
+    try {
+      const updatedApp = await updateApplication(id, formData);
+      setApplications(applications.map(app => app._id === id ? updatedApp : app));
+      setShowEditForm(false);
+      setEditingApp(null);
+    } catch (error) {
+      console.error('Error updating application:', error);
+      alert('Failed to update application');
     }
   };
 
@@ -142,6 +162,9 @@ function Dashboard() {
                       }`}>
                         {app.status}
                       </span>
+                      <button onClick={() => handleEditClick(app)} className="text-blue-500 hover:text-blue-700 font-bold text-xl">
+                        ✏️
+                      </button>
                       <button onClick={() => handleDelete(app._id)} className="text-red-500 hover:text-red-700 font-bold text-xl">
                         🗑️
                       </button>
@@ -158,6 +181,17 @@ function Dashboard() {
         <AddApplicationForm
           onClose={() => setShowAddForm(false)}
           onAdd={handleAddApplication}
+        />
+      )}
+
+      {showEditForm && editingApp && (
+        <EditApplicationForm
+          application={editingApp}
+          onClose={() => {
+            setShowEditForm(false);
+            setEditingApp(null);
+          }}
+          onUpdate={handleUpdateApplication}
         />
       )}
     </div>
