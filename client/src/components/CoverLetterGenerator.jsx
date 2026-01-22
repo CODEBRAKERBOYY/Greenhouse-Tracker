@@ -48,12 +48,8 @@ function CoverLetterGenerator({ application, onClose }) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold text-gray-800">
-            ✍️ AI Cover Letter Generator
-          </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">
-            ×
-          </button>
+          <h3 className="text-2xl font-bold text-gray-800">✍️ AI Cover Letter Generator</h3>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">×</button>
         </div>
 
         <div className="mb-4 p-4 bg-blue-50 rounded-lg">
@@ -65,9 +61,7 @@ function CoverLetterGenerator({ application, onClose }) {
         {!coverLetter ? (
           <div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Paste Your Resume Text
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Paste Your Resume Text</label>
               <textarea
                 value={resumeText}
                 onChange={(e) => setResumeText(e.target.value)}
@@ -85,10 +79,7 @@ function CoverLetterGenerator({ application, onClose }) {
               >
                 {loading ? 'Generating...' : '🚀 Generate Cover Letter'}
               </button>
-              <button
-                onClick={onClose}
-                className="flex-1 bg-gray-500 text-white font-semibold py-3 rounded-lg hover:bg-gray-600 transition"
-              >
+              <button onClick={onClose} className="flex-1 bg-gray-500 text-white font-semibold py-3 rounded-lg hover:bg-gray-600 transition">
                 Cancel
               </button>
             </div>
@@ -96,9 +87,7 @@ function CoverLetterGenerator({ application, onClose }) {
         ) : (
           <div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your Generated Cover Letter
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Your Generated Cover Letter</label>
               <textarea
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
@@ -108,30 +97,18 @@ function CoverLetterGenerator({ application, onClose }) {
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              <button
-                onClick={handleCopy}
-                className="bg-blue-500 text-white font-semibold py-3 rounded-lg hover:bg-blue-600 transition"
-              >
+              <button onClick={handleCopy} className="bg-blue-500 text-white font-semibold py-3 rounded-lg hover:bg-blue-600 transition">
                 📋 Copy
               </button>
-              <button
-                onClick={handleDownload}
-                className="bg-green-500 text-white font-semibold py-3 rounded-lg hover:bg-green-600 transition"
-              >
+              <button onClick={handleDownload} className="bg-green-500 text-white font-semibold py-3 rounded-lg hover:bg-green-600 transition">
                 💾 Download
               </button>
-              <button
-                onClick={() => setCoverLetter('')}
-                className="bg-purple-500 text-white font-semibold py-3 rounded-lg hover:bg-purple-600 transition"
-              >
+              <button onClick={() => setCoverLetter('')} className="bg-purple-500 text-white font-semibold py-3 rounded-lg hover:bg-purple-600 transition">
                 🔄 Regenerate
               </button>
             </div>
 
-            <button
-              onClick={onClose}
-              className="w-full mt-4 bg-gray-500 text-white font-semibold py-3 rounded-lg hover:bg-gray-600 transition"
-            >
+            <button onClick={onClose} className="w-full mt-4 bg-gray-500 text-white font-semibold py-3 rounded-lg hover:bg-gray-600 transition">
               Close
             </button>
           </div>

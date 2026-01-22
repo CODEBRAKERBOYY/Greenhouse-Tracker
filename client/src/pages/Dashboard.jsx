@@ -2,13 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddApplicationForm from '../components/AddApplicationForm';
 import EditApplicationForm from '../components/EditApplicationForm';
+import ResumeAnalyzer from '../components/ResumeAnalyzer';
+import CoverLetterGenerator from '../components/CoverLetterGenerator';
 import { getApplications, createApplication, updateApplication, deleteApplication } from '../services/api';
 
 function Dashboard() {
   const navigate = useNavigate();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showResumeAnalyzer, setShowResumeAnalyzer] = useState(false);
+  const [showCoverLetter, setShowCoverLetter] = useState(false);
   const [editingApp, setEditingApp] = useState(null);
+  const [selectedApp, setSelectedApp] = useState(null);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -162,10 +167,38 @@ function Dashboard() {
                       }`}>
                         {app.status}
                       </span>
-                      <button onClick={() => handleEditClick(app)} className="text-blue-500 hover:text-blue-700 font-bold text-xl">
+                      <button
+                        onClick={() => {
+                          setSelectedApp(app);
+                          setShowResumeAnalyzer(true);
+                        }}
+                        className="text-purple-500 hover:text-purple-700 font-bold text-xl"
+                        title="AI Resume Analyzer"
+                      >
+                        🤖
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedApp(app);
+                          setShowCoverLetter(true);
+                        }}
+                        className="text-green-500 hover:text-green-700 font-bold text-xl"
+                        title="Generate Cover Letter"
+                      >
+                        ✍️
+                      </button>
+                      <button
+                        onClick={() => handleEditClick(app)}
+                        className="text-blue-500 hover:text-blue-700 font-bold text-xl"
+                        title="Edit"
+                      >
                         ✏️
                       </button>
-                      <button onClick={() => handleDelete(app._id)} className="text-red-500 hover:text-red-700 font-bold text-xl">
+                      <button
+                        onClick={() => handleDelete(app._id)}
+                        className="text-red-500 hover:text-red-700 font-bold text-xl"
+                        title="Delete"
+                      >
                         🗑️
                       </button>
                     </div>
@@ -192,6 +225,26 @@ function Dashboard() {
             setEditingApp(null);
           }}
           onUpdate={handleUpdateApplication}
+        />
+      )}
+
+      {showResumeAnalyzer && selectedApp && (
+        <ResumeAnalyzer
+          application={selectedApp}
+          onClose={() => {
+            setShowResumeAnalyzer(false);
+            setSelectedApp(null);
+          }}
+        />
+      )}
+
+      {showCoverLetter && selectedApp && (
+        <CoverLetterGenerator
+          application={selectedApp}
+          onClose={() => {
+            setShowCoverLetter(false);
+            setSelectedApp(null);
+          }}
         />
       )}
     </div>
