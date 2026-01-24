@@ -26,9 +26,22 @@ export const deleteApplication = async (id) => {
   return response.data;
 };
 
+// ADD THESE - Analytics API calls
+export const getAnalyticsOverview = async () => {
+  const response = await axios.get(`${API_URL}/analytics/overview`);
+  return response.data;
+};
+
+export const getMonthlyAnalytics = async () => {
+  const response = await axios.get(`${API_URL}/analytics/monthly`);
+  return response.data;
+};
+
 export default {
   getApplications,
   createApplication,
   updateApplication,
   deleteApplication,
+  getAnalyticsOverview,
+  getMonthlyAnalytics,
 };
