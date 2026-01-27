@@ -12,6 +12,7 @@ function Dashboard() {
   const [showEditForm, setShowEditForm] = useState(false);
   const [showResumeAnalyzer, setShowResumeAnalyzer] = useState(false);
   const [showCoverLetter, setShowCoverLetter] = useState(false);
+  const [showStatusMenu, setShowStatusMenu] = useState(null);
   const [editingApp, setEditingApp] = useState(null);
   const [selectedApp, setSelectedApp] = useState(null);
   const [applications, setApplications] = useState([]);
@@ -64,6 +65,18 @@ function Dashboard() {
     }
   };
 
+  const handleQuickStatusUpdate = async (appId, newStatus) => {
+    try {
+      const app = applications.find(a => a._id === appId);
+      const updatedApp = await updateApplication(appId, { ...app, status: newStatus });
+      setApplications(applications.map(a => a._id === appId ? updatedApp : a));
+      setShowStatusMenu(null);
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Failed to update status');
+    }
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this application?')) {
       try {
@@ -97,7 +110,10 @@ function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-2xl font-bold text-gray-800">🎯 Greenhouse Tracker</h1>
-            <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+            <button 
+              onClick={handleLogout} 
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+            >
               Logout
             </button>
           </div>
@@ -105,6 +121,7 @@ function Dashboard() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-xl shadow-md">
             <p className="text-gray-600 text-sm">Total Applications</p>
@@ -124,7 +141,8 @@ function Dashboard() {
           </div>
         </div>
 
-       <div className="mb-6 flex flex-wrap gap-4">
+        {/* Action Buttons */}
+        <div className="mb-6 flex flex-wrap gap-4">
           <button 
             onClick={() => setShowAddForm(true)} 
             className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition shadow-md"
@@ -140,6 +158,7 @@ function Dashboard() {
           </button>
         </div>
 
+        {/* Applications List */}
         <div className="bg-white rounded-xl shadow-md p-6">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Your Applications</h2>
           
@@ -163,7 +182,12 @@ function Dashboard() {
                       </div>
                       {app.notes && <p className="text-sm text-gray-600 mt-2">📝 {app.notes}</p>}
                       {app.jobUrl && (
-                        <a href={app.jobUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 hover:underline mt-2 inline-block">
+                        <a 
+                          href={app.jobUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="text-sm text-blue-500 hover:underline mt-2 inline-block"
+                        >
                           🔗 View Job Posting
                         </a>
                       )}
@@ -177,6 +201,49 @@ function Dashboard() {
                       }`}>
                         {app.status}
                       </span>
+
+                      {/* Status Update Dropdown */}
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowStatusMenu(showStatusMenu === app._id ? null : app._id)}
+                          className="text-gray-500 hover:text-blue-700 font-bold text-xl"
+                          title="Update Status"
+                        >
+                          🔄
+                        </button>
+                        
+                        {showStatusMenu === app._id && (
+                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-10">
+                            <div className="py-1">
+                              <button
+                                onClick={() => handleQuickStatusUpdate(app._id, 'Applied')}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
+                              >
+                                📝 Applied
+                              </button>
+                              <button
+                                onClick={() => handleQuickStatusUpdate(app._id, 'Interview')}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-50"
+                              >
+                                💼 Interview
+                              </button>
+                              <button
+                                onClick={() => handleQuickStatusUpdate(app._id, 'Offer')}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50"
+                              >
+                                🎉 Offer
+                              </button>
+                              <button
+                                onClick={() => handleQuickStatusUpdate(app._id, 'Rejected')}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50"
+                              >
+                                ❌ Rejected
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       <button
                         onClick={() => {
                           setSelectedApp(app);
@@ -220,6 +287,15 @@ function Dashboard() {
         </div>
       </div>
 
+      {/* Click outside to close status menu */}
+      {showStatusMenu && (
+        <div 
+          className="fixed inset-0 z-0" 
+          onClick={() => setShowStatusMenu(null)}
+        ></div>
+      )}
+
+      {/* Modals */}
       {showAddForm && (
         <AddApplicationForm
           onClose={() => setShowAddForm(false)}
