@@ -1,0 +1,127 @@
+cat > popup/popup.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { 
+      width: 350px; 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 20px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    h1 { 
+      font-size: 18px; 
+      margin: 0 0 15px 0; 
+      color: #667eea;
+    }
+    .form-group { 
+      margin-bottom: 12px; 
+    }
+    label { 
+      display: block; 
+      font-size: 12px; 
+      margin-bottom: 4px; 
+      font-weight: 600; 
+      color: #374151;
+    }
+    input, select, textarea { 
+      width: 100%; 
+      padding: 8px; 
+      border: 1px solid #d1d5db; 
+      border-radius: 6px; 
+      font-size: 13px; 
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+      font-family: inherit;
+    }
+    button { 
+      width: 100%; 
+      padding: 12px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      color: white; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-weight: 600; 
+      font-size: 14px;
+    }
+    button:hover { 
+      opacity: 0.9; 
+    }
+    .message { 
+      padding: 10px; 
+      border-radius: 6px; 
+      margin-bottom: 12px; 
+      display: none; 
+      font-size: 13px;
+    }
+    .success { 
+      background: #d1fae5; 
+      color: #065f46; 
+      display: block;
+    }
+    .error { 
+      background: #fee2e2; 
+      color: #991b1b; 
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Greenhouse Tracker</h1>
+    <div class="message" id="message"></div>
+    
+    <form id="jobForm">
+      <div class="form-group">
+        <label>Company *</label>
+        <input type="text" id="company" required placeholder="e.g., Google">
+      </div>
+      
+      <div class="form-group">
+        <label>Position *</label>
+        <input type="text" id="position" required placeholder="e.g., Software Engineer">
+      </div>
+      
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" id="location" placeholder="e.g., San Francisco, CA">
+      </div>
+      
+      <div class="form-group">
+        <label>Salary</label>
+        <input type="text" id="salary" placeholder="e.g., $120,000">
+      </div>
+      
+      <div class="form-group">
+        <label>Status</label>
+        <select id="status">
+          <option value="Applied">Applied</option>
+          <option value="Interview">Interview</option>
+          <option value="Offer">Offer</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="notes" rows="3" placeholder="Add notes..."></textarea>
+      </div>
+      
+      <button type="submit">💾 Save to Tracker</button>
+    </form>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
+EOF
