@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { generateCoverLetter } from '../services/api';
 
 function CoverLetterGenerator({ application, onClose }) {
   const [resumeText, setResumeText] = useState('');
@@ -14,13 +14,13 @@ function CoverLetterGenerator({ application, onClose }) {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/ai/generate-cover-letter', {
+      const data = await generateCoverLetter({
         resumeText,
         company: application.company,
         position: application.position,
         jobDescription: application.description || '',
       });
-      setCoverLetter(response.data.coverLetter);
+      setCoverLetter(data.coverLetter);
     } catch (error) {
       console.error('Generation error:', error);
       alert('Failed to generate cover letter. Please try again.');

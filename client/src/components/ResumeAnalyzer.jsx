@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { analyzeResume } from '../services/api';
 
 function ResumeAnalyzer({ application, onClose }) {
   const [resumeText, setResumeText] = useState('');
@@ -14,11 +14,11 @@ function ResumeAnalyzer({ application, onClose }) {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/ai/analyze-resume', {
+      const data = await analyzeResume({
         resumeText,
         jobDescription: application.description || `${application.position} at ${application.company}`,
       });
-      setAnalysis(response.data);
+      setAnalysis(data);
     } catch (error) {
       console.error('Analysis error:', error);
       alert('Failed to analyze resume. Please try again.');

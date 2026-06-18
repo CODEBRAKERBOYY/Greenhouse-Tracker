@@ -1,22 +1,36 @@
 const nodemailer = require('nodemailer');
 
-// For nodemailer 7.x, use createTransport (not createTransporter)
-const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
+const emailConfigured = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
 
-// Verify transporter configuration
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('❌ Email service error:', error);
-  } else {
-    console.log('✅ Email service ready');
+const transporter = emailConfigured
+  ? nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    })
+  : null;
+
+if (transporter) {
+  transporter.verify((error) => {
+    if (error) {
+      console.error('❌ Email service error:', error);
+    } else {
+      console.log('✅ Email service ready');
+    }
+  });
+}
+
+const sendMail = async (mailOptions) => {
+  if (!transporter) {
+    console.log('⏸️  Email service skipped: EMAIL_USER and EMAIL_PASSWORD are not configured');
+    return { success: false, error: 'Email is not configured' };
   }
-});
+
+  await transporter.sendMail(mailOptions);
+  return { success: true };
+};
 
 // Send follow-up reminder email
 const sendFollowUpReminder = async (userEmail, application) => {
@@ -63,7 +77,7 @@ const sendFollowUpReminder = async (userEmail, application) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMail(mailOptions);
     console.log(`✅ Follow-up reminder sent to ${userEmail} for ${application.company}`);
     return { success: true };
   } catch (error) {
@@ -118,7 +132,7 @@ const sendInterviewReminder = async (userEmail, application) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMail(mailOptions);
     console.log(`✅ Interview reminder sent to ${userEmail} for ${application.company}`);
     return { success: true };
   } catch (error) {
@@ -162,7 +176,7 @@ const sendWeeklySummary = async (userEmail, stats) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMail(mailOptions);
     console.log(`✅ Weekly summary sent to ${userEmail}`);
     return { success: true };
   } catch (error) {

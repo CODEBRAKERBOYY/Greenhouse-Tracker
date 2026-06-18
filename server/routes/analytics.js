@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Application = require('../models/Application');
+const { protect } = require('../middleware/auth');
+
+router.use(protect);
 
 // GET /api/analytics/overview - Get all analytics data
 router.get('/overview', async (req, res) => {
   try {
-    const applications = await Application.find();
+    const applications = await Application.find({ user: req.user._id });
 
     // Status distribution
     const statusData = applications.reduce((acc, app) => {
@@ -76,7 +79,7 @@ router.get('/overview', async (req, res) => {
 // GET /api/analytics/monthly - Get monthly trends
 router.get('/monthly', async (req, res) => {
   try {
-    const applications = await Application.find();
+    const applications = await Application.find({ user: req.user._id });
 
     const monthlyData = applications.reduce((acc, app) => {
       const month = new Date(app.appliedDate).toLocaleDateString('en-US', { 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddApplicationForm from '../components/AddApplicationForm';
 import EditApplicationForm from '../components/EditApplicationForm';
@@ -17,12 +17,9 @@ function Dashboard() {
   const [selectedApp, setSelectedApp] = useState(null);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 
-  useEffect(() => {
-    loadApplications();
-  }, []);
-
-  const loadApplications = async () => {
+  const loadApplications = useCallback(async () => {
     try {
       const data = await getApplications();
       setApplications(data);
@@ -30,10 +27,19 @@ function Dashboard() {
     } catch (error) {
       console.error('Error loading applications:', error);
       setLoading(false);
+      if (error.response?.status === 401) {
+        navigate('/login');
+      }
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    loadApplications();
+  }, [loadApplications]);
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/login');
   };
 
@@ -110,12 +116,20 @@ function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-2xl font-bold text-gray-800">🎯 Greenhouse Tracker</h1>
-            <button 
-              onClick={handleLogout} 
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
+            <div className="flex items-center gap-4">
+              {currentUser?.name && (
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-gray-800">{currentUser.name}</p>
+                  <p className="text-xs text-gray-500">{currentUser.email}</p>
+                </div>
+              )}
+              <button 
+                onClick={handleLogout} 
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </nav>

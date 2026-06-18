@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAnalyticsOverview, getMonthlyAnalytics } from '../services/api';
 import { 
@@ -13,19 +13,12 @@ function Analytics() {
   const [overview, setOverview] = useState(null);
   const [monthlyData, setMonthlyData] = useState([]);
   const [error, setError] = useState(null);
+  const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 
-  useEffect(() => {
-    loadAnalytics();
-  }, []);
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     try {
-      console.log('Loading analytics...');
       const overviewRes = await getAnalyticsOverview();
-      console.log('Overview response:', overviewRes);
-      
       const monthlyRes = await getMonthlyAnalytics();
-      console.log('Monthly response:', monthlyRes);
       
       if (overviewRes.success) {
         setOverview(overviewRes.data);
@@ -38,8 +31,15 @@ function Analytics() {
       console.error('Error loading analytics:', err);
       setError(err.message);
       setLoading(false);
+      if (err.response?.status === 401) {
+        navigate('/login');
+      }
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    loadAnalytics();
+  }, [loadAnalytics]);
 
   if (loading) {
     return (
@@ -119,7 +119,9 @@ function Analytics() {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 📊 Analytics Dashboard
               </h1>
-              <p className="text-gray-600 text-sm mt-1">Deep insights into your job search journey</p>
+              <p className="text-gray-600 text-sm mt-1">
+                {currentUser?.name ? `${currentUser.name}'s job search insights` : 'Deep insights into your job search journey'}
+              </p>
             </div>
             <button
               onClick={() => navigate('/dashboard')}

@@ -16,7 +16,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Update badge with application count
 async function updateBadge() {
   try {
-    const response = await fetch('http://localhost:3001/api/analytics/overview');
+    const { token } = await chrome.storage.local.get('token');
+
+    if (!token) {
+      chrome.action.setBadgeText({ text: '' });
+      return;
+    }
+
+    const response = await fetch('http://localhost:3001/api/analytics/overview', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await response.json();
     
     if (data.success) {
@@ -28,3 +37,6 @@ async function updateBadge() {
     console.error('Error updating badge:', error);
   }
 }
+
+chrome.runtime.onInstalled.addListener(updateBadge);
+chrome.runtime.onStartup.addListener(updateBadge);

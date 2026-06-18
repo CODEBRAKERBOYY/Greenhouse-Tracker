@@ -8,12 +8,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/greenhouse-tracker';
+
+mongoose.connect(mongoUri)
   .then(() => {
     console.log('✅ MongoDB Connected');
     initializeSchedulers();
   })
   .catch((err) => console.error('❌ MongoDB Error:', err));
+
+const authRouter = require('./routes/auth');
+app.use('/api/auth', authRouter);
 
 const applicationsRouter = require('./routes/applications');
 app.use('/api/applications', applicationsRouter);
