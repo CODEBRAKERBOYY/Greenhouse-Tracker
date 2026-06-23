@@ -169,6 +169,73 @@ npm run dev
 
 ---
 
+## 🚀 Render Deployment
+
+This project is configured for a single Render Web Service that builds the React frontend and serves it from the Express backend.
+
+### Required Render Settings
+
+Create the service from the **repository root**. Do not set the root directory to `server`.
+
+```bash
+Build Command: npm install && npm run build
+Start Command: npm start
+```
+
+The root `package.json` installs both apps and builds the frontend:
+
+```bash
+npm install --prefix server
+npm install --prefix client
+npm run build --prefix client
+```
+
+After deployment, Express serves the production React build from `client/dist`. API routes remain available under `/api`.
+
+### Required Environment Variables
+
+Set these in Render:
+
+```env
+NODE_ENV=production
+MONGODB_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_strong_jwt_secret
+GROQ_API_KEY=your_groq_api_key
+```
+
+`MONGODB_URI` must be a MongoDB Atlas connection string. Render does not provide local MongoDB, so `mongodb://localhost:27017/...` will not work in production.
+
+### Frontend API URL
+
+Production frontend requests use the same deployed domain:
+
+```env
+VITE_API_URL=/api
+```
+
+This avoids hardcoding a Render URL and keeps the app working if the deployment URL changes.
+
+### Health Check
+
+Use this endpoint to confirm the backend and database state:
+
+```bash
+GET /api/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok",
+  "database": "connected"
+}
+```
+
+If the homepage shows only backend JSON, the frontend build was not generated or the service was deployed from the wrong directory.
+
+---
+
 ## 🎯 Usage Guide
 
 ### 1. Create Your Account

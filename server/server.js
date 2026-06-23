@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 const { initializeSchedulers } = require('./services/notificationScheduler');
 
@@ -29,9 +31,28 @@ app.use('/api/ai', aiRouter);
 const analyticsRouter = require('./routes/analytics');
 app.use('/api/analytics', analyticsRouter);
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Server is working!' });
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+  });
 });
+
+const clientDistPath = path.join(__dirname, '..', 'client', 'dist');
+
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get(/^(?!\/api).*/, (req, res) => {
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Server is working!',
+      note: 'client/dist was not found. Run npm run build from the project root before production start.',
+    });
+  });
+}
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
